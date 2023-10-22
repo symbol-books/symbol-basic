@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "target": "es2021",
+    "strictNullChecks": true,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true
+  }
+}
