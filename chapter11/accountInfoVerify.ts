@@ -4,13 +4,14 @@ import {
   Order,
   RawAddress,
   RepositoryFactoryHttp,
+  StateMerkleProof,
   StateProofService,
 } from "symbol-sdk";
 import { firstValueFrom } from 'rxjs';
 import { sha3_256 } from "js-sha3";
 
 //葉のハッシュ値取得関数
-const getLeafHash = (encodedPath, leafValue) => {
+const getLeafHash = (encodedPath: any, leafValue: any) => {
   const hasher = sha3_256.create();
   return hasher
     .update(Convert.hexToUint8(encodedPath + leafValue))
@@ -19,7 +20,7 @@ const getLeafHash = (encodedPath, leafValue) => {
 };
 
 //枝のハッシュ値取得関数
-const getBranchHash = (encodedPath, links) => {
+const getBranchHash = (encodedPath: string, links: any[]) => {
   const branchLinks = Array(16).fill(Convert.uint8ToHex(new Uint8Array(32)));
   links.forEach((link) => {
     branchLinks[parseInt(`0x${link.bit}`, 16)] = link.link;
@@ -33,10 +34,10 @@ const getBranchHash = (encodedPath, links) => {
 };
 
 //ワールドステートの検証
-const checkState = (stateProof, stateHash, pathHash, rootHash) => {
+const checkState = (stateProof: StateMerkleProof, stateHash: string, pathHash: string, rootHash: string) => {
   const merkleLeaf = stateProof.merkleTree.leaf;
   const merkleBranches = stateProof.merkleTree.branches.reverse();
-  const leafHash = getLeafHash(merkleLeaf.encodedPath, stateHash);
+  const leafHash = getLeafHash(merkleLeaf?.encodedPath, stateHash);
 
   let linkHash = leafHash; //最初のlinkHashはleafHash
   let bit = "";
@@ -46,12 +47,12 @@ const checkState = (stateProof, stateHash, pathHash, rootHash) => {
     linkHash = getBranchHash(branch.encodedPath, branch.links);
     bit =
       merkleBranches[i].path.slice(0, merkleBranches[i].nibbleCount) +
-      branchLink.bit +
+      branchLink?.bit +
       bit;
   }
 
   const treeRootHash = linkHash; //最後のlinkHashはrootHash
-  let treePathHash = bit + merkleLeaf.path;
+  let treePathHash = bit + merkleLeaf?.path;
 
   if (treePathHash.length % 2 == 1) {
     treePathHash = treePathHash.slice(0, -1);
